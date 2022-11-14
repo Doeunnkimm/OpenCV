@@ -1,0 +1,107 @@
+영상의 화소 처리 기법
+
+화소 처리(Point processing)
+입력 영상의 특정 좌표 픽셀 값을 변경하여 출력 영상의 해당 좌표 픽셀값으로 설정하는 연산
+
+1. 결과 영상의 픽셀 값이 정해진 범위에 있어야 함
+2. 반전, 밝기 조절, 명암비 조절 등
+
+* 밝기 조절
+영상을 전체적으로 더욱 밝거나 어둡게 만드는 연산
+
+    cv2.add(src1, src2, dst=None, mask=None, dtype=None)
+    src1 : 첫번째 영상 또는 스칼라(입력)
+    scr2 : 두번째 영상 또는 스칼라(입력)
+    dst : 덧셈 연산의 결과 영상(출력)
+    mask : 마스크 영상
+    dtype : 출력 영상의 타입
+
+✔ 참고사항
+스칼라는 실수 값 하나 또는 실수 값으로 구성된 튜플
+dst를 함수 매개변수로 전달하려면 dst의 크기가 scr1, scr2와 같야야 함
+
+
+영상의 산술 연산
+덧셈 연산
+- 두 영상의 같은 위치에 존재하는 픽셀 값을 더해서 결과 영상의 픽셀 값으로 설정
+- 덧셈의 결과가 255보다 크면 픽셀 값을 255로 설정(포화 연산)
+
+가중치 합
+- 두 영상의 같은 위치에 존재하는 픽셀 값에 대해서 가중합을 계산하여 결과 경상의 픽셀 값으로 설정
+- 보통 a + b = 1이 되도록 설정 -> 두 입력 영상의 평균 밝기를 유지(예를 들어,a가 30이면 b를 70으로)
+
+    cv2.addWeighted(src1, alpha, src2, beta, gamma, dst=None, dtype=None)
+        src1 : 첫번째 영상
+        alpha : 첫번째 영상 가중치
+        src2 : 두번째 영상
+        beta : 두번째 영상 가중치
+        gamma : 결과 영상에 추가적으로 더할 값
+
+평균 연산
+- 가중치를 a = b = 0.5로 설정한 가중치 합
+
+뺄셈 연산
+- 두 영상의 같은 위치에 존재하는 픽셀 값에 대하여 뺄셈 연산을 수행하여 결과 영상의 픽셀 값으로 설정
+- 뺄셈 결과가 0보다 작으면 픽셀 값을 0으로 설정(포화 연산)
+
+    cv2.subtract(src1, src2, dst=None, mask=None, dtype=None)
+
+차이 연산
+- 두 영상의 같은 위치에 존재하는 픽셀 값에 대하여 뺄셈 연산을 수행한 후, 그 절댓값을 겨로가 영상의 픽셀값으로 설정
+- 뺄셈 연산과 달리 입력 영상의 순서에 영향을 받지 않음
+
+    cv2.absdiff(src1, src2, dst=None)
+
+비트 단위 AND, OR, XOR, NOT 연산
+
+    cv2.bitwise_and(src1, src2, dst=None, mask=None)
+    cv2.bitwise_or(src1, src2, dst=None, mask=None)
+    cv2.bitwise_xor(src1, src2, dst=None, mask=None)
+    cv2.bitwise_not(src1, src2, dst=None, mask=None)
+
+    ✔ 각각의 픽셀값을 이진수로 표현하고 비트(bit) 단위 논리 연산을 수행
+
+채널 분리
+    cv2.split(m, mv=None)
+        m : 다채널 영상으로 구성된 컬러 영상
+        mv : 출력 영상
+        dst : 출력 영상의 리스트
+
+체널 결합
+    cv2.merge(mv, dst=None)
+        mv : 입력 영상 리스트 또는 튜플
+        dst : 출력 영상
+
+히스토그램 분석
+히스토그램(Histogram)
+- 영상의 픽셀값 분포를 그래프의 형태로 표현한 것
+- 그레이스케일 영상에서 각 그레이스케일 값에 해당하는 픽셀의 개수를 구하고 막대 그래프의 형태로 표현
+
+졍규화된 히스토그램(Normalized histogram)
+- 각 픽셀의 개수를 영상 전체 픽셀 개수로 나누어준 것
+- 해당 그레이스케일 값을 갖는 픽셀이 나타날 확률
+
+    cv2.calcHist(images, channels, mask, histSize, ranges, hist=None, accumulate=None)
+            images : 입력 영상 리스트
+            channels : 히스토그램을 구할 채널을 나타내는 리스트
+            mask : 마스크 영상. 입력 영상 전체에서 히스토그램을 구하려면 None 설정
+            histSize : 히스토그램 각 차원의 크기(bin의 개수)를 나타내는 리스트
+            ranges : 히스토그램 각 차원의 최소값과 최대값으로 구성된 리스트
+            hist : 계산된 히스토그램(numpy.ndarray)
+            accumulate : 기존의 hist 히스토그램에 누적하려면 True, 새로 만들려면 False
+
+명암비(Contrast)
+- 밝은 곳과 어두운 곳 사이에 드러나는 밝기 정도의 차이
+- 컨트러스트, 대비
+
+    np.clip(array, 하한값, 상한값)
+
+    np.clip(arr, 2, 7)
+    array([4, 5, 2], [1, 9, 3], [7, 6, 8])
+
+    # 2(하한값)보다 작으면 다 2, 7(상한값)보다 크면 다 7
+    # a([2, 2, 3, 4, 5, 6, 7, 7, 7])
+
+히스토그램 스트레칭(Histogram stretching)
+- 영상의 히스토그램이 그레이스케일 전 구간에서 걸쳐 나타나도록 변경하는 선형 변환 기법
+

@@ -1,0 +1,75 @@
+[영상의 변환]
+영상을 구성하는 픽셀의 배치 구조를 변경함으로써 전체 영상의 모양을 바꾸는 작업
+
+이동 변환
+- 가로 또는 세로 방향으로 영상을 특정 크기만큼 이동시키는 변환
+- x축과 y축 방향으로의 이동 변위를 지정
+
+1 0 a   = 2*3 어파인 변환 행렬 (6 DOF)
+0 1 b
+
+    cv2.warpAffine(src, M, dsize, dst=None, flass=None, borderMode=None, borderValue=None)
+        M : 2*3 변환 행렬. 실수형
+        dsize : 결과 영상 크기. (w, h) 튜플. (0, 0)이면 src와 같은 크기로 설정
+        flags : 보간법. 기본값은 cv2.INTER_LINEAR
+        borderMode : 가장자리 픽셀 확장 방식
+        borderValue : cv2.BORDER_CONSTANT일때 사용할 수 있는 값. 기본값은 0
+
+
+[크기 변환]
+- 영상의 크기를 원본 영상보다 크게 또는 작게 만드는 변환
+- x축과 y축 방향으로의 스케일 비율을 지정
+
+    cv2.resize(src, dsize, dst=None, fx=None, fy=None, interpolation=Mone)
+        dsize : 결과 영상 크기. (w, h) 튜플. (0, 0)이면 fx, fy 값을 이용하여 결정
+        fx, fy : x와 y방향 스케일 비율. dsize값이 0일 때 사용용
+
+영상의 축소 시 고려할 사항
+- 영상 축소 시 디테일이 사라지는 경우가 발생
+- 입력 영상을 부드럽게 필터링한 후 축소, 다단계 축소하는 것이 손실이 가장 적음
+- OpenCV의 cv2.resize() 함수에서는 cv2.INTER_AREA 플래그를 사용하는 것을 권장
+
+
+[이미지 피라미드(Image pyramid)] : 다운샘플링 & 업샘플링
+- 하나의 영상에 대해 다양한 해상도의 영상 세트를 구성한 것
+- 보통 가우시안 블러링 & 다운샘플링 형태로 축소하여 구성
+- 영상 샘플이 적을 때 사이즈를 조절해서 다른 샘플로 만들어 각각 다른 사진으로 학습시킬 때 주로 사용
+
+    cv2.pyrDown(src, dst=None, dstsize=None, borderType=None)
+        dstsize : 출력 영상 크기. 따로 지정하지 않으면 입력 영상의 가로, 세로 키기의 1/2로 설정
+
+        - 5*5크기의 가우시안 필터를 적용
+        - 짝수 행과 열을 제거하여 작은 크기의 영상을 생성
+
+    cv2.pyrUp(src, dst=None, dstsize=None, borderType=None)
+        dstsize : 출력 영상 크기. 따로 지정하지 않으면 입력 영상의 가로, 세로 크기의 2배 설정
+
+
+[영상의 회전]
+- 영상을 특정 각도만큼 회전시키는 변환(반시계 방향)
+
+    cv2.getRotaionMatrix2D(center, angle, scale)
+        center : 회전 중심 좌표. (x, y) 튜플
+        angle : (반시계방향) 회전각도. 음수는 시계방향
+        scale : 추가적인 확대 비율
+
+
+[투시 변환]
+- 3 * 3 matrix(8 DOF)
+
+    어파인 변환 행렬을 구하는 함수
+        cv2.getAffindTransform(src, dst)
+            src : 3개의 원본 좌표점. numpy.ndarray.shape=(3, 2)
+            dst : 3개의 결과 좌표점.
+
+    투시 변환 행렬을 구하는 함수
+        cv2.getPerspectiveTransform(src, dst)
+            src : 4개의 원본 좌표점. numpy.ndarray.shape=(4, 2)
+            dst : 4개의 원본 좌표점.
+
+    투시 변환 함수
+        cv2.warpPerspective(src, M, dsize, dst=None, flags=None, borderMode=None, borderValue=None)
+            M : 3*3 투시 변환 함수. 실수형
+            dsize : 결과 영상 크기. (w,h) 튜플. (0, 0)이면 src와 같은 크기로 설정
+        
+

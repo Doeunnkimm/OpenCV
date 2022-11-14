@@ -1,0 +1,54 @@
+cv2.VideoWriter 클래스
+프레임을 동영상 파일로 저장할 수 있음
+
+Fourcc(4-문자 코드, four character code)
+동영상 파일의 코덱, 압축방식, 색상, 픽셀 포멧 등을 정의하는 값
+
+DIVX MPEG-4 : cv2.VideoWriter_fourcc(*'DIVX')
+XVID MPEF-4 : cv2.VideoWriter_fourcc(*'XVID')
+FFMPEG MPEG-4 : cv2.VideoWriter_fourcc(*'FMP4')
+H.264/AVC :cv2.VideoWriter_fourcc(*'x264')
+Motion-JPEG :cv2.VideoWriter_fourcc(*'MJPG')
+
+cv2.VideoWriter(filename, fourcc, fps, framesize, isColor=None)
+    filename : 파일 이름
+    fourcc : 압축 방식
+    fps : 초당 프레임 수
+    framesize : 프레임 크기. (width, height) 튜플
+    isColor : 컬러영상이면 Ture, 흑백영상이면 False
+
+비디오 파일이 준비 되었는지 확인
+cv2.VideoWriter.isOpened -> return
+    return : 성공하면 True, 실패하면 False
+
+프레임 저장하기
+cv2.VideoWriter.write(image) -> return
+    image : 저장한 프레임(numpy.ndarray)
+--------------------------------------------------------
+키보드 이벤트
+
+키보드 입력 대기 함수
+cv2.waitKey(delay=None) -> return
+    delay : 밀리초 단위 대기 시간. delay <= 0 이면 무한 기다림. 기본값은 0
+    return : 키 값(ASCII code)
+
+특수키 코드
+ESC : 27
+ENTER : 13
+TAB : 9
+--------------------------------------------------------
+마우스 이벤트
+
+마우스 이벤트 콜백함수(자동으로 호출되는 함수) 등록 함수
+cv2.setMouseCallback(windowName, onMouse, param=None)
+    windowName : 마우스 이벤트 처리를 수행할 창 이름
+    onMouse : 마우스 이벤트 처리를 위한 콜백 함수 이름
+    param : 콜백 함수에 전달할 데이터
+
+마우스 이벤트 처리 함수(콜백 함수) 형식
+onMouse(event, x, y, flags, param)
+    event : 마우스 이벤트 종류. cv2.EVENT_로 시작하는 상수
+    x : 마우스 이벤트가 발생한 x좌표
+    y : 마우스 이벤트가 발생한 y좌표
+    flags : 마우스 이벤트 발생 시 상태. cv2.EVENT_FLAG_로 시작하는 상수
+    param : cv2.setMouseCallback() 함수에서 설정한 데이터
